@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AlphaPlay</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+<div class="top">
+  <div class="logo" aria-label="AlphaPlay"><span class="logo-image"><img src="image/AlphaPlay.jpg" alt="AlphaPlay logo"></span></div>
+  <div class="icons">
+    <button aria-label="Search" onclick="go('search')"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+    <button aria-label="Settings" onclick="sheet(1)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  </div>
+</div>
+
+<!-- HOME -->
+<section class="view show" id="v-home">
+  <div class="card" id="np">
+    <div class="np">
+      <div class="art" id="npArt"></div>
+      <div class="info">
+        <div class="lbl">Now Playing <span class="eq"><i></i><i></i><i></i></span></div>
+        <h2 id="npTitle">–</h2><p id="npArtist"></p><p id="npAlbum" style="font-size:14px"></p>
+      </div>
+      <div class="bar">
+        <input type="range" id="seek" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+        <div class="times"><span id="cur">0:00</span><span id="dur">0:00</span></div>
+      </div>
+    </div>
+    <div class="ctrl">
+      <button id="shuf" aria-label="Shuffle"><svg viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg></button>
+      <button id="prev" aria-label="Previous"><svg viewBox="0 0 24 24" style="fill:currentColor"><path d="M19 20L9 12l10-8zM5 4v16"/></svg></button>
+      <button class="pp" id="pp" aria-label="Play/Pause"></button>
+      <button id="next" aria-label="Next"><svg viewBox="0 0 24 24" style="fill:currentColor"><path d="M5 4l10 8-10 8zM19 4v16"/></svg></button>
+      <button id="fav" aria-label="Favorite"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg></button>
+    </div>
+    <div class="vol">
+      <svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7"/></svg>
+      <input type="range" id="vol" min="0" max="1" step="0.01" value="0.8" aria-label="Volume">
+      <button id="auto" style="font-size:12px;padding:4px 10px;border:1px solid var(--line);border-radius:20px">Autoplay: On</button>
+    </div>
+    <p class="audio-status" id="audioStatus" role="status" aria-live="polite"></p>
+  </div>
+  <div class="empty-library" id="emptyLibrary" style="display:none">
+    <div class="empty-library-mark">♫</div>
+    <h3>Your music, your way</h3>
+    <p>Choose songs from your device to build your AlphaPlay library.</p>
+    <button type="button" id="emptyImport" class="primary-btn">Choose audio files</button>
+  </div>
+  <div class="tiles" id="tiles"></div>
+  <div id="recentSection" style="display:none">
+    <h3>Recently Played</h3>
+    <div class="scroll" id="recent"></div>
+  </div>
+</section>
+
+<!-- LIBRARY / LIST -->
+<section class="view" id="v-list"><div id="listHead"></div><div id="list"></div></section>
+
+<!-- SEARCH -->
+<section class="view" id="v-search">
+  <input type="search" id="q" placeholder="Search songs, artists, albums…" autocomplete="off">
+  <div id="res"></div>
+</section>
+
+<!-- QUEUE -->
+<section class="view" id="v-queue"><h3 style="margin-top:6px">Up Next</h3><div id="queue"></div></section>
+
+<!-- MORE -->
+<section class="view" id="v-more">
+  <h3 style="margin-top:6px">More</h3>
+  <button class="tile w" style="width:100%;margin-bottom:10px" onclick="go('library','favs')"><b>Favorites</b><small id="favCount"></small></button>
+  <button class="tile w" id="moreImport" style="width:100%;margin-bottom:10px"><b>Import audio files</b><small>Choose more music from your device</small></button>
+  <button class="tile w" style="width:100%;margin-bottom:10px" onclick="sheet(1)"><b>Settings</b><small>Theme &amp; accent</small></button>
+  <p class="empty privacy-note" id="libraryStorageNote">Privacy first: AlphaPlay only imports audio files you choose.</p>
+</section>
+</div>
+
+<!-- MINI PLAYER -->
+<div class="mini" id="mini" onclick="go('home')">
+  <div class="art" id="miArt"></div>
+  <div class="t"><b id="miTitle"></b><small id="miArtist"></small></div>
+  <button id="miPP" aria-label="Play/Pause"></button>
+  <button id="miNext" aria-label="Next"><svg viewBox="0 0 24 24" style="fill:currentColor"><path d="M5 4l10 8-10 8zM19 4v16"/></svg></button>
+  <div class="prog" id="miProg"></div>
+</div>
+
+<nav id="nav"></nav>
+
+<!-- Add audio floating action button and dialog -->
+<button id="addFab" class="add-fab" type="button" aria-label="Add audio" title="Add audio">+</button>
+<div class="add-modal" id="addModal" role="dialog" aria-modal="true" aria-labelledby="addTitle">
+  <form id="addForm" class="add-panel">
+    <h3 id="addTitle">Add audio</h3>
+    <label>Audio files <input id="newAudio" type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.wma,.aif,.aiff,.alac,.amr,.3gp" multiple required></label>
+    <p class="add-note" id="selectionStatus">Select one or more audio files. On Android, long-press a file in the picker, then tap the other files you want to select.</p>
+    <div id="singleSongFields">
+      <label>Song title <input id="newTitle" type="text" placeholder="Song title"></label>
+      <label>Artist <input id="newArtist" type="text" placeholder="Artist name"></label>
+      <label>Album <input id="newAlbum" type="text" placeholder="Album name"></label>
+      <label>Cover photo (optional) <input id="newCover" type="file" accept="image/*"></label>
+      <div class="cover-preview" id="coverPreview"><img src="image/AlphaPlay.jpg" alt="Cover preview"><span>Default cover</span></div>
+      <p class="add-note">If you don't choose a cover photo, the default AlphaPlay cover will be used. You can edit each track later from its three-dot menu.</p>
+    </div>
+    <p class="add-note" id="multiImportNote" style="display:none">All selected tracks will be imported using their filenames and the default cover. You can edit each track's title, artist, album, and cover afterward.</p>
+    <button type="button" id="importMultiple" class="outline-btn full-btn">Import multiple songs</button>
+    <div class="add-actions"><button type="button" id="cancelAdd">Cancel</button><button type="submit" class="save-audio">Add to player</button></div>
+  </form>
+</div>
+
+<!-- Song, album, and playlist action sheets -->
+<div class="interaction-modal" id="interactionModal" role="dialog" aria-modal="true" aria-label="Music actions">
+  <div class="interaction-panel" id="interactionPanel"></div>
+</div>
+
+<!-- First-run audio-access prompt. The browser file picker grants access only to files the user selects. -->
+<div class="add-modal" id="accessModal" role="dialog" aria-modal="true" aria-labelledby="accessTitle">
+  <div class="add-panel access-panel">
+    <div class="access-icon">♫</div>
+    <h3 id="accessTitle">Connect your music library</h3>
+    <p>Choose audio files from your device so AlphaPlay can play them and organize them into albums and playlists.</p>
+    <p class="add-note"><b>Your permission matters:</b> a website cannot scan or manage every file on your phone automatically. The browser will let AlphaPlay read only the files you select. AlphaPlay keeps selected audio in this browser on this device; it does not upload or automatically sync your music to other devices. To use the same tracks elsewhere, import the files on that device too.</p>
+    <div class="add-actions"><button type="button" id="skipAudioAccess">Not now</button><button type="button" id="grantAudioAccess" class="save-audio">Choose audio files</button></div>
+  </div>
+</div>
+<input type="file" id="libraryPicker" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.oga,.opus,.flac,.wma,.aif,.aiff,.alac,.amr,.3gp" multiple hidden aria-label="Choose music files">
+
+<!-- Import progress dialog: shown immediately after selected files are confirmed. -->
+<div class="import-progress-modal" id="importProgressModal" role="dialog" aria-modal="true" aria-labelledby="importProgressTitle" aria-live="polite">
+  <div class="import-progress-panel">
+    <div class="import-progress-spinner" id="importProgressSpinner" aria-hidden="true"></div>
+    <h3 id="importProgressTitle">Adding your songs</h3>
+    <p id="importProgressMessage">Preparing your selected audio files…</p>
+    <div class="import-progress-track" role="progressbar" aria-label="Song import progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="importProgressBar"><span id="importProgressFill"></span></div>
+    <p class="import-progress-count" id="importProgressCount">0 of 0 songs added</p>
+    <p class="import-progress-errors" id="importProgressErrors" hidden></p>
+    <div class="add-actions"><button type="button" id="cancelImport">Cancel</button></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="sheet" id="sheet" onclick="if(event.target===this)sheet(0)">
+  <div>
+    <h3 style="margin:0 0 6px">Settings</h3>
+    <div class="set"><span>Dark theme / Light theme</span><button class="sw" id="themeSw" role="switch" aria-label="Toggle dark theme"></button></div>
+    <div class="set"><span>Accent colour</span><div class="accs" id="accs"></div></div>
+    <button onclick="sheet(0)" style="margin-top:18px;width:100%;padding:13px;border-radius:14px;background:var(--grad);color:#fff;font-weight:600">Done</button>
+  </div>
+</div>
+
+<audio id="au" preload="metadata" playsinline></audio>
+
+<script src="js/app.js"></script>
+</body>
+</html>
